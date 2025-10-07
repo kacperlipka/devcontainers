@@ -1,0 +1,10 @@
+{
+  "name": "Nix Development Environment",
+  "image": "ubuntu:22.04",
+
+  "features": {
+    "ghcr.io/devcontainers/features/nix:1": {}
+  },
+
+  "postCreateCommand": "bash setup.sh"
+}
