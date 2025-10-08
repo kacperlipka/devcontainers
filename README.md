@@ -5,103 +5,58 @@ A portable development environment using Nix on Ubuntu that matches your macOS c
 ## Features
 
 - **Ubuntu 22.04** base image with Nix package manager
-- **Declarative configuration** using `shell.nix`
-- **Identical tools** to your macOS environment
-- **Pre-configured dotfiles** for Neovim (LazyVim), tmux, starship, and bash
-- **Zero manual setup** - everything configured automatically
+- **Declarative configuration** using Nix flakes with remote package source
+- **Identical tools** to your macOS environment via nix-config repository
+- **Container-optimized packages** for development environments
+- **Zero manual setup** - packages installed via nix-env during initialization
+
+## Quick Start
+
+### DevPod (Recommended)
+```bash
+# Start and SSH into development environment
+devpod up https://github.com/kacperlipka/nix-devcontainer --ide none
+ssh nix-devcontainer.devpod
+```
+
+### VS Code
+1. Clone repository and open in VS Code
+2. Click "Reopen in Container" when prompted
+
+### Manual Docker
+```bash
+git clone https://github.com/kacperlipka/nix-devcontainer.git && cd nix-devcontainer
+docker build -t nix-dev . && docker run -it -v $(pwd):/workspace nix-dev
+```
 
 ## Tools Included
 
-- **Development**: git, gh, nodejs, neovim (with LazyVim), ripgrep, fd, fzf, bat, eza
+- **Development**: git, gh, nodejs, neovim (LazyVim), ripgrep, fd, fzf, bat, eza
 - **Shell**: starship prompt, tmux, htop, btop
 - **Network**: curl, wget, nmap, netcat
 - **Language servers**: nil (Nix), lua-language-server
 - **Utilities**: jq, yq, tree, unzip, zip, neofetch, devpod
 
-## Usage
+## Configuration Files
 
-### With DevPod (Recommended)
+- **`flake.nix`**: Main Nix configuration importing packages from remote nix-config
+- **`.devcontainer/devcontainer.json`**: VS Code container settings
+- **`.devcontainer/setup.sh`**: Container initialization script
 
-```bash
-# Start devcontainer from this repository
-devpod up https://github.com/kacperlipka/nix-devcontainer --ide none
+## Architecture
 
-# SSH into the development environment
-ssh nix-devcontainer.devpod
+The environment uses Nix for package management importing from remote nix-config:
+- **Remote packages**: Pulls devcontainer-specific package sets from github:kacperlipka/nix-config
+- **Architecture support**: Automatically handles x86_64 and aarch64 Linux containers
+- **Development shell**: Provides immediate access to all development tools
+- **Consistent environment**: Matches macOS development setup exactly
 
-# Your environment is ready with all tools configured!
-```
-
-### With VS Code
-
-1. Clone this repository
-2. Open in VS Code
-3. Click "Reopen in Container" when prompted
-4. VS Code will build and start the devcontainer automatically
-
-### Manual Docker Usage
-
-```bash
-# Clone and build
-git clone https://github.com/kacperlipka/nix-devcontainer.git
-cd nix-devcontainer
-
-# Build and run with Docker
-docker build -t nix-dev .
-docker run -it -v $(pwd):/workspace nix-dev
-```
-
-## Configuration
-
-The environment is configured through:
-
-- **`shell.nix`**: Main Nix configuration with all packages and dotfiles
-- **`.devcontainer/devcontainer.json`**: Container settings for VS Code
-- **`.devcontainer/setup.sh`**: Initialization script
-
-All dotfiles (neovim, tmux, starship configs) are managed declaratively by Nix.
-
-## What You Get
-
-When you enter the container, you'll have:
-
-- ✅ **Neovim with LazyVim** automatically configured
-- ✅ **Tmux** with your preferred settings
-- ✅ **Starship prompt** matching your macOS setup
-- ✅ **All development tools** from your main configuration
-- ✅ **Consistent environment** across any machine
-
-## Development Workflow
-
-```bash
-# Start your devcontainer
-devpod up https://github.com/kacperlipka/nix-devcontainer
-
-# SSH in
-ssh nix-devcontainer.devpod
-
-# Start coding immediately - everything is ready!
-nvim .
-```
-
-The environment automatically:
-- Configures git with devcontainer defaults
-- Sets up proper locale settings
-- Links all dotfiles
-- Initializes LazyVim on first neovim run
-
-## Customization
-
-To modify the environment:
-
-1. Edit `shell.nix` to add/remove packages or change configurations
-2. Rebuild the container to apply changes
-3. The environment is completely reproducible
+The flake.nix imports packages from the remote nix-config repository, ensuring consistency across all environments.
 
 ## Benefits
 
-- **Portable**: Use the same environment on any machine
-- **Consistent**: Matches your macOS development setup exactly
+- **Portable**: Identical environment on any machine
+- **Consistent**: Matches macOS development setup exactly
 - **Fast**: Pre-built packages from Nix cache
 - **Declarative**: All configuration in version control
 - **Isolated**: No impact on host system
