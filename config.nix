@@ -1,4 +1,5 @@
 {
+  allowUnfree = true;
   packageOverrides = pkgs: with pkgs; {
     devcontainerPackages = pkgs.buildEnv {
       name = "devcontainer-tools";
