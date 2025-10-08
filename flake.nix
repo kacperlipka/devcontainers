@@ -1,120 +1,38 @@
 {
-  description = "Nix-based development container with remote config support";
+  description = "Development container using nix packages and dotfiles";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
 
-    # Your remote nix-config repository
+    # Your remote nix-config repository for packages
     nix-config = {
       url = "github:kacperlipka/nix-config";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # Home Manager for configuration management
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { self, nixpkgs, flake-utils, nix-config, home-manager }:
+  outputs = { self, nixpkgs, flake-utils, nix-config }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
-
-        # Create a home-manager configuration using your remote config
-        homeConfiguration = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules = [
-            # Import your user configuration from remote nix-config
-            nix-config.inputs.nixpkgs.lib.mkDefault {
-              imports = [
-                "${nix-config}/users/kacperlipka.nix"
-              ];
-
-              # Override for devcontainer environment
-              home = {
-                username = "root";  # devcontainer default user
-                homeDirectory = "/root";
-                stateVersion = "24.05";
-              };
-
-              # Override git config for devcontainer
-              programs.git = {
-                enable = true;
-                userName = "devcontainer";
-                userEmail = "dev@example.com";
-              };
-            }
-          ];
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
         };
 
-        # Extract packages from your nix-config
-        devcontainerPackages = with pkgs; [
-          # Add any additional devcontainer-specific packages here
-          devpod
-        ];
+        # Get devcontainer packages from nix-config
+        packages = import "${nix-config}/home/packages/devcontainer.nix" { inherit pkgs; };
 
       in
       {
-        # Main development shell that uses your remote nix-config
+        # Development shell with packages
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            # Core system packages needed for devcontainer
-            bash
-            coreutils
-            findutils
-            gnugrep
-            gnused
-            gnutar
-            gzip
-            curl
-            wget
-            git
-          ] ++ devcontainerPackages;
+          buildInputs = packages;
 
           shellHook = ''
-            echo "╭─────────────────────────────────────────────╮"
-            echo "│  Nix Development Environment (Ubuntu)       │"
-            echo "│  Using remote nix-config: kacperlipka       │"
-            echo "╰─────────────────────────────────────────────╯"
-            echo ""
-            echo "Activating home-manager environment..."
-
-            # Activate the home-manager environment
-            ${homeConfiguration.activationPackage}/activate
-
-            # Source the generated profile
-            if [ -f /root/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
-              source /root/.nix-profile/etc/profile.d/hm-session-vars.sh
-            fi
-
-            echo "Your development environment is ready!"
-            echo "All configurations sourced from: github:kacperlipka/nix-config"
+            echo "Development environment ready!"
+            echo "Run bootstrap.sh to setup dotfiles"
           '';
-        };
-
-        # Alternative shell for local-only development
-        devShells.local = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            # Minimal local setup
-            bash
-            git
-            neovim
-            tmux
-            starship
-          ];
-
-          shellHook = ''
-            echo "Using minimal local configuration"
-          '';
-        };
-
-        # Home Manager configuration as a package
-        packages = {
-          homeConfiguration = homeConfiguration.activationPackage;
-          default = self.devShells.${system}.default;
         };
 
         # Format for `nix fmt`

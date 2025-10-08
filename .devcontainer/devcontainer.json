@@ -3,8 +3,11 @@
   "image": "ubuntu:22.04",
 
   "features": {
-    "ghcr.io/devcontainers/features/nix:1": {}
+    "ghcr.io/devcontainers/features/nix:1": {
+      "enableFlakes": true,
+      "multiUser": true
+    }
   },
 
-  "postCreateCommand": "bash setup.sh"
+  "postCreateCommand": "bash .devcontainer/setup.sh",
 }
