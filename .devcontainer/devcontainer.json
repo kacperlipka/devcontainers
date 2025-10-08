@@ -9,5 +9,5 @@
     }
   },
 
-  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postCreateCommand": "bash .devcontainer/bootstrap.sh",
 }
