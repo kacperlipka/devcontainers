@@ -7,11 +7,7 @@
         # Core utilities
         curl
         wget
-        unzip
-        zip
         tree
-        htop
-        btop
 
         # Development tools
         git
@@ -20,7 +16,6 @@
         yq
         nodejs_24
         claude-code
-        devpod
 
         # Text editors and tools
         neovim
@@ -33,9 +28,6 @@
         # Network tools
         nmap
         netcat
-
-        # System monitoring
-        neofetch
 
         # Language servers for Neovim
         nil

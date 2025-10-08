@@ -4,7 +4,7 @@ set -e
 # Setup Nix configuration
 echo "Setting up Nix configuration..."
 mkdir -p ~/.config/nixpkgs
-cp /workspaces/devcontainers/config.nix ~/.config/nixpkgs/config.nix
+cp /workspaces/devcontainers/.devcontainer/config.nix ~/.config/nixpkgs/config.nix
 
 # Install packages using nix-env
 echo "Installing development packages..."

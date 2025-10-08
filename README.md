@@ -1,62 +1,47 @@
 # Nix Development Container
 
-A portable development environment using Nix on Ubuntu that matches your macOS configuration.
+A portable development environment using Nix on Ubuntu for container-native development.
 
 ## Features
 
 - **Ubuntu 22.04** base image with Nix package manager
-- **Declarative configuration** using Nix flakes with remote package source
-- **Identical tools** to your macOS environment via nix-config repository
+- **Declarative configuration** using nix-env with packageOverrides
 - **Container-optimized packages** for development environments
-- **Zero manual setup** - packages installed via nix-env during initialization
+- **Zero manual setup** - packages installed during container initialization
+- **Dotfiles integration** - automatic setup of shell and editor configurations
 
 ## Quick Start
 
 ### DevPod (Recommended)
 ```bash
 # Start and SSH into development environment
-devpod up https://github.com/kacperlipka/nix-devcontainer --ide none
-ssh nix-devcontainer.devpod
-```
-
-### VS Code
-1. Clone repository and open in VS Code
-2. Click "Reopen in Container" when prompted
-
-### Manual Docker
-```bash
-git clone https://github.com/kacperlipka/nix-devcontainer.git && cd nix-devcontainer
-docker build -t nix-dev . && docker run -it -v $(pwd):/workspace nix-dev
+devpod up https://github.com/kacperlipka/devcontainers --ide none
+ssh devcontainers.devpod
 ```
 
 ## Tools Included
 
-- **Development**: git, gh, nodejs, neovim (LazyVim), ripgrep, fd, fzf, bat, eza
-- **Shell**: starship prompt, tmux, htop, btop
+- **Development**: git, gh, nodejs, claude-code
+- **Editors**: neovim (LazyVim), ripgrep, fd, fzf, bat, eza
+- **Shell**: starship prompt, tmux
 - **Network**: curl, wget, nmap, netcat
 - **Language servers**: nil (Nix), lua-language-server
-- **Utilities**: jq, yq, tree, unzip, zip, neofetch, devpod
+- **Utilities**: jq, yq, tree
 
 ## Configuration Files
 
-- **`flake.nix`**: Main Nix configuration importing packages from remote nix-config
-- **`.devcontainer/devcontainer.json`**: VS Code container settings
+- **`.devcontainer/config.nix`**: Nix package configuration with packageOverrides
+- **`.devcontainer/devcontainer.json`**: Container settings
 - **`.devcontainer/setup.sh`**: Container initialization script
 
-## Architecture
+## Usage
 
-The environment uses Nix for package management importing from remote nix-config:
-- **Remote packages**: Pulls devcontainer-specific package sets from github:kacperlipka/nix-config
-- **Architecture support**: Automatically handles x86_64 and aarch64 Linux containers
-- **Development shell**: Provides immediate access to all development tools
-- **Consistent environment**: Matches macOS development setup exactly
-
-The flake.nix imports packages from the remote nix-config repository, ensuring consistency across all environments.
+This repository can be cloned into any project directory to provide a consistent, container-native development environment. The setup automatically installs all development tools and configures dotfiles for immediate productivity.
 
 ## Benefits
 
 - **Portable**: Identical environment on any machine
-- **Consistent**: Matches macOS development setup exactly
 - **Fast**: Pre-built packages from Nix cache
 - **Declarative**: All configuration in version control
 - **Isolated**: No impact on host system
+- **Lightweight**: Only essential development tools included
